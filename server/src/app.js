@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 
@@ -11,22 +12,42 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
 // Security & CORS
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        scriptSrc: ["'self'"],
+        mediaSrc: ["'self'", 'data:', 'blob:']
+      }
+    }
+  })
+);
 
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim());
 
-app.use(
+app.use((req, res, next) =>
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Same-origin (frontend disajikan server ini) selalu diizinkan
+      let sameOrigin = false;
+      try {
+        sameOrigin = !!origin && new URL(origin).host === req.headers.host;
+      } catch (e) {
+        sameOrigin = false;
+      }
+      if (!origin || sameOrigin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       return callback(new Error('Origin tidak diizinkan oleh CORS'));
     },
     credentials: true
-  })
+  })(req, res, next)
 );
 
 app.use(express.json({ limit: '1mb' }));
@@ -41,6 +62,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api', quizRoutes);
 app.use('/api/attempt', attemptRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Serve frontend (hasil build client/dist) + SPA fallback
+const clientDist = path.join(__dirname, '../../client/dist');
+app.use(express.static(clientDist));
+app.get(/^(?!\/api).*/, (req, res, next) => {
+  res.sendFile(path.join(clientDist, 'index.html'), (err) => err && next());
+});
 
 // 404 handler
 app.use((req, res) => {
