@@ -17,6 +17,10 @@ app.set("trust proxy", 1);
 // Security & CORS
 app.use(
   helmet({
+    // Server dilayani lewat HTTP biasa (IP internal), jadi jangan paksa HTTPS
+    strictTransportSecurity: false,
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false,
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -25,6 +29,7 @@ app.use(
         imgSrc: ["'self'", "data:", "blob:"],
         scriptSrc: ["'self'"],
         mediaSrc: ["'self'", "data:", "blob:"],
+        upgradeInsecureRequests: null,
       },
     },
   }),
