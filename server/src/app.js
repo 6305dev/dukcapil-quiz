@@ -34,6 +34,14 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "http://127.0.0.1:5173")
   .split(",")
   .map((o) => o.trim());
 
+function isLoopback(origin) {
+  try {
+    return ['localhost', '127.0.0.1', '[::1]'].includes(new URL(origin).hostname);
+  } catch (e) {
+    return false;
+  }
+}
+
 app.use((req, res, next) =>
   cors({
     origin(origin, callback) {
@@ -56,7 +64,7 @@ app.use((req, res, next) =>
       } catch (e) {
         sameOrigin = false;
       }
-      if (!origin || sameOrigin || allowedOrigins.includes(origin)) {
+      if (!origin || sameOrigin || isLoopback(origin) || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       return callback(new Error("Origin tidak diizinkan oleh CORS"));
