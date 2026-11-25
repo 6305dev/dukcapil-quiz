@@ -94,6 +94,8 @@ import {
   HelpCircle,
   FileBarChart2,
   Trophy,
+  Gift,
+  Dices,
   LogOut,
   Menu,
   X
@@ -110,7 +112,9 @@ const navItems = [
   { to: '/admin/quizzes', label: 'Kelola Quiz', icon: ClipboardList },
   { to: '/admin/questions', label: 'Kelola Soal', icon: HelpCircle },
   { to: '/admin/scores', label: 'Skor Peserta', icon: FileBarChart2 },
-  { to: '/admin/ranking', label: 'Ranking Global', icon: Trophy }
+  { to: '/admin/ranking', label: 'Ranking Global', icon: Trophy },
+  { to: '/admin/doorprize', label: 'Kelola Doorprize', icon: Gift },
+  { to: '/doorprize', label: 'Spinning Wheel', icon: Dices }
 ];
 
 function handleLogout() {

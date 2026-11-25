@@ -86,3 +86,16 @@ CREATE TABLE IF NOT EXISTS quiz_answers (
     ON DELETE CASCADE,
   UNIQUE KEY uq_attempt_question (attempt_id, question_id)
 ) ENGINE=InnoDB;
+
+-- 4.6 doorprize_prizes
+CREATE TABLE IF NOT EXISTS doorprize_prizes (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nama VARCHAR(150) NOT NULL,
+  warna VARCHAR(20) NOT NULL DEFAULT '#FFD84D',
+  stok INT NULL DEFAULT NULL,
+  urutan INT NOT NULL DEFAULT 0,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_doorprize_active_urutan (is_active, urutan)
+) ENGINE=InnoDB;

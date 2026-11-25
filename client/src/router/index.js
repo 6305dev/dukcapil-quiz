@@ -11,6 +11,11 @@ const routes = [
     redirect: '/login'
   },
   {
+    path: '/doorprize',
+    name: 'doorprize',
+    component: () => import('@/views/DoorprizeView.vue')
+  },
+  {
     path: '/',
     component: AuthLayout,
     meta: { guestOnly: true },
@@ -98,6 +103,11 @@ const routes = [
         path: 'ranking',
         name: 'admin-ranking',
         component: () => import('@/views/admin/RankingView.vue')
+      },
+      {
+        path: 'doorprize',
+        name: 'admin-doorprize',
+        component: () => import('@/views/admin/DoorprizeManageView.vue')
       }
     ]
   },

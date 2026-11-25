@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const doorprizeController = require('../controllers/doorprizeController');
 const authenticate = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 
@@ -29,5 +30,11 @@ router.delete('/questions/:id', adminController.deleteQuestion);
 // Scores & Ranking
 router.get('/scores', adminController.getScores);
 router.get('/ranking', adminController.getAdminRanking);
+
+// Doorprize Prizes CRUD
+router.get('/doorprize', doorprizeController.getAdminPrizes);
+router.post('/doorprize', doorprizeController.createPrize);
+router.put('/doorprize/:id', doorprizeController.updatePrize);
+router.delete('/doorprize/:id', doorprizeController.deletePrize);
 
 module.exports = router;

@@ -155,6 +155,26 @@ async function seed() {
       console.log('Quizzes already exist, skipping sample quiz seed.');
     }
 
+    // 3. Seed sample Doorprize Prizes if none exist
+    const [existingPrizes] = await connection.query('SELECT id FROM doorprize_prizes LIMIT 1');
+    if (existingPrizes.length === 0) {
+      const samplePrizes = [
+        ['Tumbler Eksklusif', '#FFD84D', null, 1, true],
+        ['Payung Lipat Dukcapil', '#93C5FD', null, 2, true],
+        ['Voucher Belanja 100K', '#A3F7BF', 5, 3, true],
+        ['Mug Cantik', '#FF9F68', null, 4, true],
+        ['Goodie Bag Spesial', '#C4B5FD', null, 5, true],
+        ['Grand Prize Headset', '#FF6B6B', 2, 6, true],
+        ['Gantungan Kunci', '#FDE68A', null, 7, true],
+        ['Kaos Eksklusif', '#67E8F9', 10, 8, true]
+      ];
+      await connection.query(
+        `INSERT INTO doorprize_prizes (nama, warna, stok, urutan, is_active) VALUES ?`,
+        [samplePrizes]
+      );
+      console.log(`Seeded ${samplePrizes.length} doorprize prizes.`);
+    }
+
     console.log('Seeding completed successfully!');
     console.log('Default Admin  -> NIK: 0000000000000001 | Password: admin1234');
     console.log('Sample Peserta -> NIK: 3201010101950001 | Password: peserta123');

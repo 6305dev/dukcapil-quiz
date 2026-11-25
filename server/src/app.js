@@ -8,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const quizRoutes = require("./routes/quizRoutes");
 const attemptRoutes = require("./routes/attemptRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const doorprizeRoutes = require("./routes/doorprizeRoutes");
 
 const app = express();
 
@@ -90,6 +91,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", quizRoutes);
 app.use("/api/attempt", attemptRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/doorprize", doorprizeRoutes);
 
 // Serve frontend (hasil build client/dist) + SPA fallback
 const clientDist = path.join(__dirname, "../../client/dist");
