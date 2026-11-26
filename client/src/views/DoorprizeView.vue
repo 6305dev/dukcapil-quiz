@@ -217,22 +217,35 @@
         <div class="space-y-5 lg:col-span-5">
           <!-- Daftar Hadiah di Roda -->
           <div class="nb-card p-5">
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <Gift class="h-5 w-5 text-[#111111]" :stroke-width="2.5" />
                 <h2 class="text-base font-extrabold">Daftar Hadiah ({{ prizes.length }})</h2>
               </div>
-              <label
-                class="inline-flex cursor-pointer items-center gap-1.5 text-xs font-bold text-neutral-700 select-none"
-                title="Jika dicentang, stok hadiah terbatas akan otomatis berkurang 1 saat terpilih"
-              >
-                <input
-                  v-model="autoDeductStock"
-                  type="checkbox"
-                  class="h-4 w-4 rounded border-2 border-[#111111] accent-[#111111]"
-                />
-                Kurangi stok otomatis
-              </label>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  @click="showStock = !showStock"
+                  class="nb-btn inline-flex h-8 items-center gap-1.5 px-2.5 text-xs font-bold text-[#111111]"
+                  :class="showStock ? 'bg-[#FFD84D] hover:bg-[#FCCE2D]' : 'bg-white hover:bg-[#FFFBEB]'"
+                >
+                  <EyeOff v-if="showStock" class="h-3.5 w-3.5" :stroke-width="2.4" />
+                  <Eye v-else class="h-3.5 w-3.5" :stroke-width="2.4" />
+                  {{ showStock ? 'Sembunyikan Stok' : 'Lihat Stok' }}
+                </button>
+                <label
+                  v-if="auth.isAdmin"
+                  class="inline-flex cursor-pointer items-center gap-1.5 text-xs font-bold text-neutral-700 select-none"
+                  title="Jika dicentang, stok hadiah terbatas akan otomatis berkurang 1 saat terpilih"
+                >
+                  <input
+                    v-model="autoDeductStock"
+                    type="checkbox"
+                    class="h-4 w-4 rounded border-2 border-[#111111] accent-[#111111]"
+                  />
+                  Kurangi stok otomatis
+                </label>
+              </div>
             </div>
 
             <div class="mt-4 max-h-64 space-y-2 overflow-y-auto pr-1">
@@ -254,10 +267,10 @@
                   <span class="truncate text-xs font-bold sm:text-sm">{{ p.nama }}</span>
                 </div>
                 <span
-                  v-if="p.stok !== null"
+                  v-if="showStock"
                   class="shrink-0 rounded-md border border-[#111111] bg-[#FFFDF7] px-2 py-0.5 text-[11px] font-bold"
                 >
-                  Sisa {{ p.stok }}
+                  {{ p.stok !== null ? `Sisa ${p.stok}` : 'Tak Terbatas' }}
                 </span>
               </div>
             </div>
@@ -344,10 +357,6 @@
               </h2>
             </div>
 
-            <p v-if="stockDeductedInfo" class="mt-3 text-xs font-bold text-neutral-600">
-              {{ stockDeductedInfo }}
-            </p>
-
             <div class="mt-6 grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -389,7 +398,9 @@ import {
   VolumeX,
   RefreshCw,
   Settings,
-  ArrowLeft
+  ArrowLeft,
+  Eye,
+  EyeOff
 } from 'lucide-vue-next';
 
 const auth = useAuthStore();
@@ -399,6 +410,7 @@ const loading = ref(true);
 const isSpinning = ref(false);
 const isMuted = ref(localStorage.getItem('doorprize_muted') === '1');
 const autoDeductStock = ref(true);
+const showStock = ref(false);
 
 const wheelCanvas = ref(null);
 const confettiCanvas = ref(null);
@@ -409,7 +421,6 @@ const bulbPhase = ref(0);
 
 const selectedPrize = ref(null);
 const winnerModalOpen = ref(false);
-const stockDeductedInfo = ref('');
 const spinHistory = ref([]);
 const highlightedSegmentId = ref(null);
 
@@ -587,7 +598,6 @@ function spinWheel() {
 
   unlockAudio();
   winnerModalOpen.value = false;
-  stockDeductedInfo.value = '';
   isSpinning.value = true;
 
   const count = prizes.value.length;
@@ -683,9 +693,6 @@ async function finishSpin(winningIndex) {
     try {
       const { data } = await api.post(`/doorprize/prizes/${won.id}/claim`);
       if (data.prize) {
-        const remaining = data.prize.stok;
-        stockDeductedInfo.value =
-          remaining > 0 ? `Sisa stok hadiah ini: ${remaining}` : 'Stok terakhir untuk hadiah ini telah diklaim!';
         // Perbarui daftar hadiah untuk putaran berikutnya
         const { data: refreshed } = await api.get('/doorprize/prizes');
         prizes.value = refreshed.prizes || [];

@@ -16,15 +16,6 @@
         </router-link>
 
         <div class="flex items-center gap-2">
-          <router-link
-            to="/doorprize"
-            title="Spinning Wheel Doorprize"
-            class="nb-btn flex h-9 items-center gap-1.5 bg-[#FFD84D] px-3 text-xs font-bold text-[#111111] hover:bg-[#FCCE2D]"
-          >
-            <Gift class="h-4 w-4" :stroke-width="2.4" />
-            <span>Doorprize</span>
-          </router-link>
-
           <button
             type="button"
             @click="handleLogout"
@@ -51,7 +42,7 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { ShieldCheck, LogOut, Gift } from 'lucide-vue-next';
+import { ShieldCheck, LogOut } from 'lucide-vue-next';
 
 const auth = useAuthStore();
 const route = useRoute();
